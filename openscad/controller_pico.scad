@@ -1,82 +1,82 @@
-// controller_pico.scad — Controller USB snello in stile pad anni '90: 1 joystick KY-023 + 4 pulsanti 12x12
-// Scheda: Raspberry Pi Pico RP2040 (clone TZT con USB-C) - gamepad USB nativo per PC, Recalbox, Raspberry, Android, senza driver.
-// Parti: "sopra" (stampato capovolto, piano superiore sul piatto), "sotto" (stampato com'e'), "piastrina" pulsanti.
-// Viti: 4 x M3x12 + 2 x M3x8 testa cilindrica (chiusura, da sotto; le M3x8 nelle impugnature), 5 x M3x6 (joystick e piastrina).
-// Tutte le misure in mm. Piano di divisione dei due gusci a z = 0.
+// controller_pico.scad — Slim 90s-style USB controller: 1 KY-023 joystick + 4 12x12 buttons
+// Board: Raspberry Pi Pico RP2040 (TZT clone with USB-C) - native USB gamepad for PC, Recalbox, Raspberry, Android, no drivers.
+// Parts: "top" (printed upside down, top face on the bed), "bottom" (printed as is), button "plate".
+// Screws: 4 x M3x12 + 2 x M3x8 cheese head (closing, from below; the M3x8 in the grips), 5 x M3x6 (joystick and plate).
+// All dimensions in mm. Split plane of the two shells at z = 0.
 
-/* [Parte da generare] */
-parte = "assieme"; // [assieme, esploso, sopra, sotto, piastrina]
+/* [Part to generate] */
+parte = "assembly"; // [assembly, exploded, top, bottom, plate]
 
-/* [Guscio] */
-H       = 11.5;   // semi-altezza del corpo centrale: piano superiore a +H, fondo a -H (spessore 23 mm)
-r_bordo = 11;     // raggio in pianta dei bordi arrotondati
-par     = 2.4;    // spessore pareti
-gioco   = 0.2;    // gioco tra labbro di centraggio e parete
-labbro  = [1.2, 2.5];  // spessore e altezza del labbro (sul guscio sotto)
-// apici del corpo centrale (il piano superiore piatto e' il poligono che li unisce)
+/* [Shell] */
+H       = 11.5;   // half height of the central body: top face at +H, bottom at -H (23 mm thick)
+r_bordo = 11;     // plan radius of the rounded edges
+par     = 2.4;    // wall thickness
+gioco   = 0.2;    // clearance between centring lip and wall
+labbro  = [1.2, 2.5];  // lip thickness and height (on the bottom shell)
+// vertices of the central body (the flat top face is the polygon joining them)
 corpo_pt = [[-46, 20], [0, 22], [46, 20], [56, -2], [24, -24], [-24, -24], [-56, -2]];
-// impugnatura destra (la sinistra e' speculare): [x, y, z centro, raggio in pianta, raggio verticale]
-// i primi due punti coincidono con gli apici del corpo; gli altri disegnano il "corno" che scende verso il palmo
+// right grip (the left one is mirrored): [x, y, centre z, plan radius, vertical radius]
+// the first two points coincide with the body vertices; the others draw the "horn" that goes down towards the palm
 impugnatura = [[56, -2, 0, r_bordo, H], [24, -24, 0, r_bordo, H], [47, -40, -3, 13, 12.5], [55, -66, -8, 12, 11]];
 
 /* [Joystick KY-023] */
-joy       = [-33, 2];    // centro della leva (a sinistra, dove i pad classici hanno la croce)
-joy_foro  = 26;          // foro per la cupola del joystick
-joy_svasa = 1.2;         // svasatura del foro
-joy_fori  = [20.5, 26.5];// interasse fori schedina (x, y) attorno alla leva: MISURARE
-joy_alt   = 11.5;        // dal piano della schedina al sotto del piano superiore: MISURARE
-joy_pcb   = [26, 34];    // schedina (connettore a 5 pin verso il retro, +y)
-joy_col_d = 6.5;         // colonnine
+joy       = [-33, 2];    // stick centre (on the left, where classic pads have the d-pad)
+joy_foro  = 26;          // hole for the joystick dome
+joy_svasa = 1.2;         // hole chamfer
+joy_fori  = [20.5, 26.5];// board hole spacing (x, y) around the stick: MEASURE
+joy_alt   = 11.5;        // from the board surface to the underside of the top face: MEASURE
+joy_pcb   = [26, 34];    // board (5-pin connector towards the back, +y)
+joy_col_d = 6.5;         // posts
 
-/* [Pulsanti 12x12 + tappo 10x10] */
-pul_c       = [33, 1.5]; // centro del rombo A/B/X/Y
-pul_passo   = 12;        // distanza dei pulsanti dal centro
-tappo_foro  = 10.6;      // foro quadrato per il tappo 10x10
-pul_corpo   = 12.4;      // sede del corpo 12x12 sotto il piano
-pul_sede    = 0.8;       // profondita' sede
-pul_h       = 3.5;       // altezza corpo pulsante
-piast_sp    = 2.5;       // spessore piastrina
-piast_quadro= 15;        // lato del quadrato attorno a ogni pulsante
+/* [12x12 buttons + 10x10 caps] */
+pul_c       = [33, 1.5]; // centre of the A/B/X/Y diamond
+pul_passo   = 12;        // distance of the buttons from the centre
+tappo_foro  = 10.6;      // square hole for the 10x10 cap
+pul_corpo   = 12.4;      // seat for the 12x12 body under the top face
+pul_sede    = 0.8;       // seat depth
+pul_h       = 3.5;       // button body height
+piast_sp    = 2.5;       // plate thickness
+piast_quadro= 15;        // side of the square around each button
 
 /* [Raspberry Pi Pico TZT USB-C] */
-pm      = [21.6, 51.6];  // scheda 21 x 51 (larghezza, lunghezza) + gioco
-pm_sp   = 1.0;           // spessore PCB: MISURARE (se e' 1,6 metti 1.6)
-usb_h   = 3.2;           // altezza della presa USB-C sopra il PCB (3,2 tipica; micro-USB 2,7)
-usb_fin = [12.5, 7.5];   // finestra per la spina USB-C (va bene anche per la micro-USB)
+pm      = [21.6, 51.6];  // 21 x 51 board (width, length) + clearance
+pm_sp   = 1.0;           // PCB thickness: MEASURE (if it is 1.6 set 1.6)
+usb_h   = 3.2;           // height of the USB-C socket above the PCB (3.2 typical; micro-USB 2.7)
+usb_fin = [12.5, 7.5];   // window for the USB-C plug (also fine for micro-USB)
 
-/* [Viti di chiusura M3] */
-// [x, y, lunghezza vite]: nelle impugnature il guscio e' piu' basso, li' vanno viti M3x8
+/* [M3 closing screws] */
+// [x, y, screw length]: in the grips the shell is lower, M3x8 screws go there
 viti      = [[-18, 26, 12], [18, 26, 12], [-20, -26, 12], [20, -26, 12], [-52, -50, 8], [52, -50, 8]];
 vite_boss = 9;
 pilota    = 2.5;
 passante  = 3.4;
 testa_d   = 6.5;
-testa_z   = -5;          // fine della sede testa (vite M3x12: 5 mm sotto + 7 mm sopra)
+testa_z   = -5;          // end of the head seat (M3x12 screw: 5 mm below + 7 mm above)
 
-/* [Qualita'] */
+/* [Quality] */
 $fn     = 48;
 fn_corpo= 56;
 
-// ---------------------------------------------------------------- quote derivate
-z_cielo = H - par;                    // sotto del piano superiore
-z_pcb   = z_cielo - joy_alt;          // faccia superiore della schedina joystick
-z_pul   = z_cielo + pul_sede;         // faccia superiore del corpo dei pulsanti
-z_piast = z_pul - pul_h;              // faccia superiore della piastrina
+// ---------------------------------------------------------------- derived dimensions
+z_cielo = H - par;                    // underside of the top face
+z_pcb   = z_cielo - joy_alt;          // top face of the joystick board
+z_pul   = z_cielo + pul_sede;         // top face of the button bodies
+z_piast = z_pul - pul_h;              // top face of the plate
 pulsanti = [[0, 1], [1, 0], [-1, 0], [0, -1]];   // Y, B, X, A
-pm_y1   = 22 + r_bordo - par - 1;     // bordo della scheda lato USB
+pm_y1   = 22 + r_bordo - par - 1;     // board edge on the USB side
 pm_y0   = pm_y1 - pm[1];
-pm_top  = -pm_sp;                     // faccia superiore PCB: centro della presa USB a z = 0 circa
+pm_top  = -pm_sp;                     // PCB top face: USB socket centre at about z = 0
 pm_bot  = pm_top - pm_sp;
 z_min   = max(concat([for (g = impugnatura) g[4] - g[2]], [H]));
 
-// ---------------------------------------------------------------- forma
+// ---------------------------------------------------------------- shape
 module ell(r, rz) scale([r, r, rz]) sphere(1, $fn = fn_corpo);
 module ell_g(g, o) translate([g[0], g[1], g[2]]) ell(g[3] - o, g[4] - o);
 
 module corpo(o = 0) {
     hull() for (p = corpo_pt) translate([p[0], p[1], 0]) ell(r_bordo - o, H - o);
     for (s = [-1, 1]) mirror([s < 0 ? 1 : 0, 0, 0]) {
-        hull() for (i = [0:2]) ell_g(impugnatura[i], o);                       // attacco al corpo
+        hull() for (i = [0:2]) ell_g(impugnatura[i], o);                       // joint with the body
         for (i = [2:len(impugnatura) - 2]) hull() { ell_g(impugnatura[i], o); ell_g(impugnatura[i + 1], o); }
     }
 }
@@ -92,7 +92,7 @@ module usb_finestra()
 module fori_joy() for (i = [-1, 1], k = [-1, 1]) translate([joy[0] + i * joy_fori[0] / 2, joy[1] + k * joy_fori[1] / 2, 0]) children();
 function pul_pos(p) = [pul_c[0] + p[0] * pul_passo, pul_c[1] + p[1] * pul_passo];
 
-// ---------------------------------------------------------------- guscio superiore
+// ---------------------------------------------------------------- top shell
 module sopra() {
     difference() {
         union() {
@@ -103,20 +103,20 @@ module sopra() {
                     fori_joy() translate([0, 0, z_pcb]) cylinder(d = joy_col_d, h = H);
                     translate([pul_c[0], pul_c[1], z_piast]) cylinder(d = 7, h = H);
                     for (v = viti) translate([v[0], v[1], 0]) cylinder(d = vite_boss, h = 2 * H);
-                    translate([-4, pm_y1 - 7, pm_top + usb_h + 0.2]) cube([8, 6, 2 * H]);   // pressore sulla presa USB (0,2 di gioco)
+                    translate([-4, pm_y1 - 7, pm_top + usb_h + 0.2]) cube([8, 6, 2 * H]);   // presser on the USB socket (0.2 clearance)
                 }
             }
         }
-        // foro joystick con svasatura
+        // joystick hole with chamfer
         translate([joy[0], joy[1], z_cielo - 1]) cylinder(d = joy_foro, h = 3 * H, $fn = 96);
         translate([joy[0], joy[1], H - joy_svasa]) cylinder(d1 = joy_foro, d2 = joy_foro + 2 * joy_svasa + 2, h = joy_svasa + 1, $fn = 96);
-        // pulsanti: foro tappo + sede corpo + smusso
+        // buttons: cap hole + body seat + chamfer
         for (p = pulsanti) translate([pul_pos(p)[0], pul_pos(p)[1], 0]) {
             translate([-tappo_foro / 2, -tappo_foro / 2, z_cielo - 1]) cube([tappo_foro, tappo_foro, 3 * H]);
             translate([-pul_corpo / 2, -pul_corpo / 2, z_cielo - 1]) cube([pul_corpo, pul_corpo, pul_sede + 1]);
             translate([0, 0, H - 0.6]) linear_extrude(1, scale = 1.25) square(tappo_foro, center = true);
         }
-        // fori pilota
+        // pilot holes
         fori_joy() translate([0, 0, z_pcb - 1]) cylinder(d = pilota, h = 7, $fn = 24);
         translate([pul_c[0], pul_c[1], z_piast - 1]) cylinder(d = pilota, h = 5, $fn = 24);
         for (v = viti) translate([v[0], v[1], -1]) cylinder(d = pilota, h = v[2] + testa_z + 2, $fn = 24);
@@ -124,12 +124,12 @@ module sopra() {
     }
 }
 
-// ---------------------------------------------------------------- guscio inferiore
+// ---------------------------------------------------------------- bottom shell
 module sotto() {
     difference() {
         union() {
             intersection() { guscio(); semispazio_sotto(); }
-            // labbro di centraggio
+            // centring lip
             difference() {
                 intersection() {
                     difference() { corpo(par + gioco); corpo(par + gioco + labbro[0]); }
@@ -141,7 +141,7 @@ module sotto() {
                 corpo(0);
                 union() {
                     for (v = viti) translate([v[0], v[1], -4 * H]) cylinder(d = vite_boss, h = 4 * H);
-                    // culla del Pico: listello centrale + due sponde
+                    // Pico cradle: central rib + two side walls
                     translate([-4, pm_y0 + 2, -4 * H]) cube([8, pm[1] - 4, 4 * H + pm_bot]);
                     for (s = [-1, 1]) translate([s * (pm[0] / 2 + 0.3) + (s < 0 ? -1.6 : 0), pm_y0, -4 * H])
                         cube([1.6, pm[1] - 1, 4 * H + pm_top + 1]);
@@ -156,21 +156,21 @@ module sotto() {
     }
 }
 
-// ---------------------------------------------------------------- piastrina che tiene i 4 pulsanti (centrata sul rombo)
+// ---------------------------------------------------------------- plate holding the 4 buttons (centred on the diamond)
 module piastrina() {
     difference() {
         hull() for (p = pulsanti) translate([p[0] * pul_passo - piast_quadro / 2, p[1] * pul_passo - piast_quadro / 2, 0]) cube([piast_quadro, piast_quadro, piast_sp]);
         translate([0, 0, -1]) cylinder(d = passante, h = piast_sp + 2, $fn = 24);
         for (p = pulsanti) translate([p[0] * pul_passo, p[1] * pul_passo, -1]) {
-            for (s = [-1, 1]) translate([s * 6.25 - 1.5, -4.5, 0]) cube([3, 9, piast_sp + 2]);   // zampette passo 12,5
-            translate([-3, -3, 0]) cube([6, 6, piast_sp + 2]);                                   // passaggio fili
+            for (s = [-1, 1]) translate([s * 6.25 - 1.5, -4.5, 0]) cube([3, 9, piast_sp + 2]);   // legs at 12.5 pitch
+            translate([-3, -3, 0]) cube([6, 6, piast_sp + 2]);                                   // wire passage
         }
     }
 }
 
-// ---------------------------------------------------------------- componenti colorati (solo immagini della guida)
+// ---------------------------------------------------------------- coloured components (guide images only)
 col_sopra = "#2b3440"; col_sotto = "#9aa3ad"; col_piast = "#e8590c";
-col_tappi = ["#eab308", "#dc2626", "#2563eb", "#16a34a"];   // Y giallo, B rosso, X blu, A verde (come pulsanti[])
+col_tappi = ["#eab308", "#dc2626", "#2563eb", "#16a34a"];   // Y yellow, B red, X blue, A green (same order as pulsanti[])
 
 module ky023(leva = true) {
     color("#1d4ed8") translate([-joy_pcb[0] / 2, -joy_pcb[1] / 2, -1.6]) cube([joy_pcb[0], joy_pcb[1], 1.6]);
@@ -199,7 +199,7 @@ module pulsante(c) {
 
 module pico() {
     color("#5b21b6") translate([-pm[0] / 2 + 0.3, pm_y0, pm_bot]) cube([pm[0] - 0.6, pm[1] - 0.6, pm_sp]);
-    color("#c0c4c8") translate([-4.5, pm_y1 - 6.5, pm_top]) cube([9, 7.5, usb_h]);                     // presa USB-C
+    color("#c0c4c8") translate([-4.5, pm_y1 - 6.5, pm_top]) cube([9, 7.5, usb_h]);                     // USB-C socket
     color("#f2f2f2") translate([-2.2, pm_y1 - 13, pm_top]) cube([4.4, 3.4, 1.4]);                      // BOOTSEL
     color("#111") translate([-3.5, pm_y0 + 22, pm_top]) cube([7, 7, 0.9]);                             // RP2040
     color("#d4a017") for (s = [-1, 1], i = [0:19]) translate([s * 8.89, pm_y0 + 1.6 + i * 2.54, pm_top]) cylinder(d = 1.6, h = 0.05);
@@ -247,10 +247,10 @@ module figura(f) {
     }
 }
 
-// ---------------------------------------------------------------- selezione (orientamento di stampa)
+// ---------------------------------------------------------------- selection (print orientation)
 if (len(parte) > 2 && parte[0] == "f" && parte[1] == "_") figura(parte);
-else if (parte == "assieme")   assieme();
-else if (parte == "esploso")   assieme(35);
-else if (parte == "sopra")     capovolto() sopra();
-else if (parte == "sotto")     translate([0, 0, z_min]) sotto();
-else if (parte == "piastrina") piastrina();
+else if (parte == "assembly")  assieme();
+else if (parte == "exploded")  assieme(35);
+else if (parte == "top")       capovolto() sopra();
+else if (parte == "bottom")    translate([0, 0, z_min]) sotto();
+else if (parte == "plate")     piastrina();

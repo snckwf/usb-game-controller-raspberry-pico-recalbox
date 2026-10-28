@@ -1,65 +1,65 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1080" viewBox="0 0 1500 1080" font-family="DejaVu Sans, Arial, sans-serif">
 <rect width="1500" height="1080" fill="#ffffff"/>
-<text x="30" y="40" font-size="22" font-weight="bold">Controller USB snello — collegamenti (Raspberry Pi Pico, 1 joystick, 4 pulsanti)</text>
-<text x="30" y="64" font-size="13" fill="#444">Schema a blocchi. Pin con nome e numero del piedino sul Pico. Arancio = 3,3 V, nero = GND, colori = segnali. Tutto prende alimentazione dalla presa USB del Pico.</text>
+<text x="30" y="40" font-size="22" font-weight="bold">Slim USB controller — wiring (Raspberry Pi Pico, 1 joystick, 4 buttons)</text>
+<text x="30" y="64" font-size="13" fill="#444">Block diagram. Pins with name and pin number on the Pico. Orange = 3.3 V, black = GND, colours = signals. Everything is powered from the Pico's USB socket.</text>
 <rect x="900" y="150" width="300" height="158" rx="6" fill="#eef3fb" stroke="#1f3a6e" stroke-width="1.5"/>
 <text x="1050.0" y="168" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Joystick KY-023</text>
 <circle cx="900" cy="182" r="4.5" fill="#1f3a6e"/>
 <text x="910" y="186" font-size="12">GND</text>
 <circle cx="900" cy="206" r="4.5" fill="#1f3a6e"/>
 <text x="910" y="210" font-size="12">+5V</text>
-<text x="992" y="210" font-size="10.5" fill="#d22">va al 3V3(OUT), non al 5 V!</text>
+<text x="992" y="210" font-size="10.5" fill="#d22">goes to 3V3(OUT), not to 5 V!</text>
 <circle cx="900" cy="230" r="4.5" fill="#1f3a6e"/>
 <text x="910" y="234" font-size="12">VRx</text>
-<text x="992" y="234" font-size="10.5" fill="#666">asse orizzontale</text>
+<text x="992" y="234" font-size="10.5" fill="#666">horizontal axis</text>
 <circle cx="900" cy="254" r="4.5" fill="#1f3a6e"/>
 <text x="910" y="258" font-size="12">VRy</text>
-<text x="992" y="258" font-size="10.5" fill="#666">asse verticale</text>
+<text x="992" y="258" font-size="10.5" fill="#666">vertical axis</text>
 <circle cx="900" cy="278" r="4.5" fill="#1f3a6e"/>
 <text x="910" y="282" font-size="12">SW</text>
-<text x="992" y="282" font-size="10.5" fill="#666">clic = L3 / FUNZIONE</text>
-<text x="910" y="298" font-size="10.5" fill="#666">a sinistra, connettore verso il retro del controller</text>
+<text x="992" y="282" font-size="10.5" fill="#666">click = L3 / FUNCTION</text>
+<text x="910" y="298" font-size="10.5" fill="#666">on the left, connector towards the back</text>
 <rect x="900" y="330" width="300" height="64" rx="6" fill="#eef3fb" stroke="#1f3a6e" stroke-width="1.5"/>
-<text x="1050.0" y="348" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Pulsante A (tappo verde, basso)</text>
+<text x="1050.0" y="348" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Button A (green cap, bottom)</text>
 <circle cx="900" cy="362" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="366" font-size="12">piedino 1</text>
-<text x="992" y="366" font-size="10.5" fill="#666">segnale</text>
+<text x="910" y="366" font-size="12">pin 1</text>
+<text x="992" y="366" font-size="10.5" fill="#666">signal</text>
 <circle cx="900" cy="386" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="390" font-size="12">piedino 4</text>
-<text x="992" y="390" font-size="10.5" fill="#666">GND (in diagonale)</text>
+<text x="910" y="390" font-size="12">pin 4</text>
+<text x="992" y="390" font-size="10.5" fill="#666">GND (diagonal)</text>
 <rect x="900" y="416" width="300" height="64" rx="6" fill="#eef3fb" stroke="#1f3a6e" stroke-width="1.5"/>
-<text x="1050.0" y="434" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Pulsante B (tappo rosso, destra)</text>
+<text x="1050.0" y="434" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Button B (red cap, right)</text>
 <circle cx="900" cy="448" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="452" font-size="12">piedino 1</text>
-<text x="992" y="452" font-size="10.5" fill="#666">segnale</text>
+<text x="910" y="452" font-size="12">pin 1</text>
+<text x="992" y="452" font-size="10.5" fill="#666">signal</text>
 <circle cx="900" cy="472" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="476" font-size="12">piedino 4</text>
-<text x="992" y="476" font-size="10.5" fill="#666">GND (in diagonale)</text>
+<text x="910" y="476" font-size="12">pin 4</text>
+<text x="992" y="476" font-size="10.5" fill="#666">GND (diagonal)</text>
 <rect x="900" y="502" width="300" height="64" rx="6" fill="#eef3fb" stroke="#1f3a6e" stroke-width="1.5"/>
-<text x="1050.0" y="520" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Pulsante X (tappo blu, sinistra)</text>
+<text x="1050.0" y="520" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Button X (blue cap, left)</text>
 <circle cx="900" cy="534" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="538" font-size="12">piedino 1</text>
-<text x="992" y="538" font-size="10.5" fill="#666">segnale</text>
+<text x="910" y="538" font-size="12">pin 1</text>
+<text x="992" y="538" font-size="10.5" fill="#666">signal</text>
 <circle cx="900" cy="558" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="562" font-size="12">piedino 4</text>
-<text x="992" y="562" font-size="10.5" fill="#666">GND (in diagonale)</text>
+<text x="910" y="562" font-size="12">pin 4</text>
+<text x="992" y="562" font-size="10.5" fill="#666">GND (diagonal)</text>
 <rect x="900" y="588" width="300" height="64" rx="6" fill="#eef3fb" stroke="#1f3a6e" stroke-width="1.5"/>
-<text x="1050.0" y="606" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Pulsante Y (tappo giallo, alto)</text>
+<text x="1050.0" y="606" font-size="12.5" font-weight="bold" fill="#1f3a6e" text-anchor="middle">Button Y (yellow cap, top)</text>
 <circle cx="900" cy="620" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="624" font-size="12">piedino 1</text>
-<text x="992" y="624" font-size="10.5" fill="#666">segnale</text>
+<text x="910" y="624" font-size="12">pin 1</text>
+<text x="992" y="624" font-size="10.5" fill="#666">signal</text>
 <circle cx="900" cy="644" r="4.5" fill="#1f3a6e"/>
-<text x="910" y="648" font-size="12">piedino 4</text>
-<text x="992" y="648" font-size="10.5" fill="#666">GND (in diagonale)</text>
+<text x="910" y="648" font-size="12">pin 4</text>
+<text x="992" y="648" font-size="10.5" fill="#666">GND (diagonal)</text>
 <rect x="1216" y="358" width="30" height="30" rx="4" fill="#16a34a" stroke="#333"/>
 <rect x="1216" y="444" width="30" height="30" rx="4" fill="#dc2626" stroke="#333"/>
 <rect x="1216" y="530" width="30" height="30" rx="4" fill="#2563eb" stroke="#333"/>
 <rect x="1216" y="616" width="30" height="30" rx="4" fill="#eab308" stroke="#333"/>
 <rect x="50" y="143" width="230" height="564" rx="8" fill="#e7f0fa" stroke="#1f6fb2" stroke-width="2"/>
 <text x="64" y="167" font-size="14" font-weight="bold" fill="#1f6fb2">Raspberry Pi Pico</text>
-<text x="64" y="183" font-size="11" fill="#1f6fb2">RP2040, USB nativo</text>
+<text x="64" y="183" font-size="11" fill="#1f6fb2">RP2040, native USB</text>
 <rect x="141.0" y="129" width="48" height="16" rx="7" fill="#c0c4c8" stroke="#555"/>
-<text x="165.0" y="121" font-size="11" text-anchor="middle" fill="#444">USB → PC / Recalbox (dati e alimentazione)</text>
+<text x="165.0" y="121" font-size="11" text-anchor="middle" fill="#444">USB → PC / Recalbox (data and power)</text>
 <rect x="246" y="206" width="28" height="22" rx="3" fill="#15803d"/>
 <circle cx="260" cy="217" r="5" fill="#d4a017" stroke="#7a5a10"/>
 <text x="64" y="222" font-size="14" font-weight="bold">3V3(OUT)  pin 36</text>
@@ -105,21 +105,21 @@
 <text x="64" y="662" font-size="14" font-weight="bold">GP5  pin 7</text>
 <circle cx="280" cy="657" r="4.5" fill="#1f6fb2"/>
 <line x1="288" y1="340" x2="306" y2="358" stroke="#d22" stroke-width="3"/><line x1="288" y1="358" x2="306" y2="340" stroke="#d22" stroke-width="3"/>
-<text x="50" y="729" font-size="12" fill="#d22" font-weight="bold">VBUS / VSYS (5 V): NON collegare</text>
-<text x="50" y="745" font-size="11" fill="#d22">5 V sugli ingressi danneggiano il Pico</text>
-<text x="50" y="767" font-size="11" fill="#444">Joystick sulla massa analogica AGND (meno rumore),</text>
-<text x="50" y="783" font-size="11" fill="#444">pulsanti su un GND qualsiasi (pin 3, 8, 13, 18, 23, 28, 38).</text>
+<text x="50" y="729" font-size="12" fill="#d22" font-weight="bold">VBUS/VSYS (5 V): do NOT connect</text>
+<text x="50" y="745" font-size="11" fill="#d22">5 V on the inputs damages the Pico</text>
+<text x="50" y="767" font-size="11" fill="#444">Joystick on AGND (less noise),</text>
+<text x="50" y="783" font-size="11" fill="#444">buttons on any GND (pins 3, 8, 13, 18, 23, 28, 38).</text>
 <line x1="780" y1="150" x2="780" y2="727" stroke="#ff9900" stroke-width="5"/>
 <line x1="820" y1="150" x2="820" y2="727" stroke="#111" stroke-width="5"/>
-<text x="770" y="120" font-size="12" font-weight="bold" fill="#c77700" text-anchor="end">+3,3 V (3V3(OUT) del Pico)</text>
-<text x="830" y="120" font-size="12" font-weight="bold" fill="#111">GND comune</text>
+<text x="770" y="120" font-size="12" font-weight="bold" fill="#c77700" text-anchor="end">+3.3 V (Pico 3V3(OUT))</text>
+<text x="830" y="120" font-size="12" font-weight="bold" fill="#111">Common GND</text>
 <polyline points="280,217 310,217 310,134 780,134 780,150" fill="none" stroke="#ff9900" stroke-width="3" stroke-linejoin="round"/>
 <circle cx="280" cy="217" r="5" fill="#ff9900"/>
 <polyline points="280,261 290,261 290,737 820,737 820,727" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
 <circle cx="280" cy="261" r="5" fill="#111"/>
 <polyline points="280,305 300,305 300,745 820,745 820,727" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
 <circle cx="280" cy="305" r="5" fill="#111"/>
-<text x="330" y="767" font-size="12" font-weight="bold">AGND e GND del Pico → GND comune</text>
+<text x="330" y="767" font-size="12" font-weight="bold">Pico AGND and GND → common GND</text>
 <polyline points="820,182 900,182" fill="none" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/>
 <circle cx="820" cy="182" r="5" fill="#111"/>
 <polyline points="780,206 900,206" fill="none" stroke="#ff9900" stroke-width="2.4" stroke-linejoin="round"/>
@@ -154,10 +154,10 @@
 <circle cx="280" cy="657" r="5" fill="#c79a00"/>
 <circle cx="900" cy="620" r="5" fill="#c79a00"/>
 <text x="50" y="807" font-size="12.5" font-weight="bold">Note:</text>
-<text x="50" y="828" font-size="12.5" font-weight="normal">• Joystick KY-023: il pin marcato +5V va collegato al 3V3(OUT) del Pico. Con 5 V le uscite VRx/VRy superano i 3,3 V ammessi dagli ingressi.</text>
-<text x="50" y="849" font-size="12.5" font-weight="normal">• Pulsanti 12×12: usare due piedini in diagonale (1 e 4). Nessuna resistenza: il firmware attiva le pull-up interne. Pulsante premuto = pin a GND.</text>
-<text x="50" y="870" font-size="12.5" font-weight="normal">• La massa dei 4 pulsanti è un unico filo che passa da un pulsante all'altro e arriva a un GND del Pico.</text>
-<text x="50" y="891" font-size="12.5" font-weight="normal">• Fili saldati direttamente: sul joystick accorciare i pin a 90° a 3–4 mm; sul Pico saldare i fili nei fori dal lato dei componenti. Fili da 15 cm.</text>
-<text x="50" y="912" font-size="12.5" font-weight="normal">• Firmware: scheda Raspberry Pi Pico (pacchetto Earle Philhower), sketch controller_pico.ino. Primo caricamento con BOOTSEL premuto.</text>
-<text x="50" y="933" font-size="12.5" font-weight="normal">• Tasto FUNZIONE (L3 tenuto): +A = L1, +B = R1, +X = SELECT, +Y = START.  L3 tenuto da solo 5 s = ricalibra il centro dello stick.</text>
+<text x="50" y="828" font-size="12.5" font-weight="normal">• KY-023 joystick: the pin marked +5V goes to the Pico's 3V3(OUT). With 5 V the VRx/VRy outputs exceed the 3.3 V allowed on the inputs.</text>
+<text x="50" y="849" font-size="12.5" font-weight="normal">• 12×12 buttons: use two diagonally opposite pins (1 and 4). No resistors: the firmware enables the internal pull-ups. Button pressed = pin to GND.</text>
+<text x="50" y="870" font-size="12.5" font-weight="normal">• The ground of the 4 buttons is a single wire daisy-chained from button to button to a Pico GND.</text>
+<text x="50" y="891" font-size="12.5" font-weight="normal">• Wires soldered directly: on the joystick shorten the 90° pins to 3–4 mm; on the Pico solder the wires into the holes from the component side. 15 cm wires.</text>
+<text x="50" y="912" font-size="12.5" font-weight="normal">• Firmware: Raspberry Pi Pico board (Earle Philhower package), sketch controller_pico.ino. First upload with BOOTSEL held down.</text>
+<text x="50" y="933" font-size="12.5" font-weight="normal">• FUNCTION key (L3 held): +A = L1, +B = R1, +X = SELECT, +Y = START.  L3 held on its own for 5 s = recalibrates the stick centre.</text>
 </svg>

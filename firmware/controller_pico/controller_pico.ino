@@ -1,193 +1,193 @@
 /*
-  controller_pico.ino - Controller USB in stile pad anni '90, 1 joystick + 4 pulsanti
-  Scheda: Raspberry Pi Pico RP2040 (clone TZT con USB-C). Si presenta come gamepad USB standard, senza driver:
-  PC Windows/Linux/Mac, Recalbox, RetroPie, Batocera, Android.
+  controller_pico.ino - 90s-style USB controller, 1 joystick + 4 buttons
+  Board: Raspberry Pi Pico RP2040 (TZT clone with USB-C). It shows up as a standard USB gamepad, no drivers needed:
+  Windows/Linux/Mac PCs, Recalbox, RetroPie, Batocera, Android.
 
   Arduino IDE:
-    - Gestore schede: "Raspberry Pi Pico/RP2040/RP2350" di Earle F. Philhower
-    - Scheda: "Raspberry Pi Pico"  (vale anche per i cloni TZT con 2, 4 o 16 MB di flash)
-    - Strumenti > USB Stack: "Pico SDK"   (e' quella predefinita)
-    Nessuna libreria da installare: il gamepad USB (Joystick.h) e' gia' nel pacchetto della scheda.
-    Primo caricamento: tieni premuto BOOTSEL mentre colleghi il cavo, poi Carica.
+    - Boards Manager: "Raspberry Pi Pico/RP2040/RP2350" by Earle F. Philhower
+    - Board: "Raspberry Pi Pico"  (also valid for TZT clones with 2, 4 or 16 MB of flash)
+    - Tools > USB Stack: "Pico SDK"   (the default)
+    No libraries to install: the USB gamepad (Joystick.h) is already part of the board package.
+    First upload: hold BOOTSEL while plugging in the cable, then Upload.
 
-  Collegamenti (pulsanti verso GND, pull-up interne attive):
-    Joystick KY-023   VRx -> GP26 (ADC0)   VRy -> GP27 (ADC1)   SW -> GP6
-                      +5V del modulo -> 3V3(OUT) (pin 36)   GND -> GND
-    Pulsante A (basso)    GP2 --[pulsante]-- GND
-    Pulsante B (destra)   GP3 --[pulsante]-- GND
-    Pulsante X (sinistra) GP4 --[pulsante]-- GND
-    Pulsante Y (alto)     GP5 --[pulsante]-- GND
-  ATTENZIONE: il joystick va alimentato dal 3V3(OUT), NON da VBUS/VSYS: gli ingressi del Pico sono a 3,3 V.
-  (pulsanti 12x12 a 4 piedini: usare due piedini in diagonale, es. 1 e 4)
+  Wiring (buttons to GND, internal pull-ups enabled):
+    KY-023 joystick   VRx -> GP26 (ADC0)   VRy -> GP27 (ADC1)   SW -> GP6
+                      module +5V -> 3V3(OUT) (pin 36)   GND -> GND
+    Button A (bottom)  GP2 --[button]-- GND
+    Button B (right)   GP3 --[button]-- GND
+    Button X (left)    GP4 --[button]-- GND
+    Button Y (top)     GP5 --[button]-- GND
+  WARNING: power the joystick from 3V3(OUT), NOT from VBUS/VSYS: the Pico inputs are 3.3 V.
+  (4-pin 12x12 buttons: use two diagonally opposite pins, e.g. 1 and 4)
 
-  Tasto FUNZIONE = clic del joystick (L3) tenuto premuto:
-    L3 + A = L1      L3 + B = R1      L3 + X = SELECT (hotkey Recalbox)      L3 + Y = START
-    L3 premuto e rilasciato da solo = clic L3 normale
-    L3 tenuto da solo per 5 secondi = ricalibra il centro del joystick (il LED lampeggia)
+  FUNCTION key = joystick click (L3) held down:
+    L3 + A = L1      L3 + B = R1      L3 + X = SELECT (Recalbox hotkey)      L3 + Y = START
+    L3 pressed and released on its own = normal L3 click
+    L3 held on its own for 5 seconds = recalibrates the joystick centre (the LED blinks)
 
-  Pulsanti HID: 1 A, 2 B, 3 X, 4 Y, 5 L1, 6 R1, 7 SELECT, 8 START, 9 L3
-  Assi: X/Y = joystick.  Croce digitale (hat): copia dello stick, utile nei giochi retro (CROCE_DA_STICK).
+  HID buttons: 1 A, 2 B, 3 X, 4 Y, 5 L1, 6 R1, 7 SELECT, 8 START, 9 L3
+  Axes: X/Y = joystick.  Digital d-pad (hat): copy of the stick, useful in retro games (DPAD_FROM_STICK).
 
-  Debug: Monitor seriale (qualsiasi velocita'), invia "d" per vedere i valori grezzi del joystick.
+  Debug: Serial Monitor (any baud rate), send "d" to see the raw joystick values.
 */
 
 #include <Joystick.h>
 
-// ======================= CONFIGURAZIONE =======================
+// ======================= CONFIGURATION =======================
 #define PIN_X    26
 #define PIN_Y    27
-#define PIN_SPIA  LED_BUILTIN
+#define PIN_LED  LED_BUILTIN
 
-const uint8_t PIN_TASTI[5] = {2, 3, 4, 5, 6};   // A, B, X, Y, L3
-enum { T_A = 0, T_B, T_X, T_Y, T_L3 };
+const uint8_t BUTTON_PINS[5] = {2, 3, 4, 5, 6};   // A, B, X, Y, L3
+enum { B_A = 0, B_B, B_X, B_Y, B_L3 };
 
-#define CROCE_DA_STICK   1       // 1 = invia anche la croce digitale ricavata dallo stick
-#define SOGLIA_CROCE     45      // % di corsa oltre cui la croce scatta
-#define TAP_L3_MS        80      // durata del clic L3 inviato al rilascio
-#define TAP_L3_MAX_MS    600     // oltre questo tempo il rilascio di L3 non genera il clic
-#define RICALIBRA_MS     5000    // L3 tenuto da solo per questo tempo = ricalibrazione
-#define ZONA_MORTA       120     // zona morta al centro (su 2048, ADC a 12 bit)
-#define ANTIRIMBALZO_MS  10
-#define PERIODO_MS       4       // 250 aggiornamenti al secondo
+#define DPAD_FROM_STICK  1       // 1 = also send the digital d-pad derived from the stick
+#define DPAD_THRESHOLD   45      // % of travel beyond which the d-pad triggers
+#define L3_TAP_MS        80      // length of the L3 click sent on release
+#define L3_TAP_MAX_MS    600     // beyond this time releasing L3 does not generate the click
+#define RECALIBRATE_MS   5000    // L3 held on its own for this time = recalibration
+#define DEAD_ZONE        120     // dead zone around the centre (out of 2048, 12-bit ADC)
+#define DEBOUNCE_MS      10
+#define PERIOD_MS        4       // 250 updates per second
 
-// Se un asse va al contrario o e' scambiato, cambia questi valori (verifica con joy.cpl o "d" sul monitor seriale).
-#define SCAMBIA_XY  0
-#define INVERTI_X   0
-#define INVERTI_Y   0
+// If an axis is reversed or swapped, change these values (check with joy.cpl or "d" on the Serial Monitor).
+#define SWAP_XY    0
+#define INVERT_X   0
+#define INVERT_Y   0
 // ==============================================================
 
-int centro[2] = {2048, 2048};
-const uint8_t PIN_ASSI[2] = {PIN_X, PIN_Y};
+int centre[2] = {2048, 2048};
+const uint8_t AXIS_PINS[2] = {PIN_X, PIN_Y};
 
-uint8_t statoTasti = 0, letturaPrec = 0;
-unsigned long tCambio = 0, tInvio = 0, tDebug = 0;
-bool l3Giu = false, comboUsata = false;
-unsigned long tL3 = 0, fineTapL3 = 0;
-bool ricalibrato = false;
+uint8_t buttonState = 0, prevReading = 0;
+unsigned long tChange = 0, tSend = 0, tDebug = 0;
+bool l3Down = false, comboUsed = false;
+unsigned long tL3 = 0, l3TapEnd = 0;
+bool recalibrated = false;
 bool debug = false;
 
-int leggiAsse(uint8_t pin) {
+int readAxis(uint8_t pin) {
   long s = 0;
   for (uint8_t i = 0; i < 8; i++) s += analogRead(pin);
   return (int)(s / 8);
 }
 
-void calibra() {
+void calibrate() {
   for (uint8_t a = 0; a < 2; a++) {
     long s = 0;
     for (uint8_t i = 0; i < 64; i++) {
-      s += analogRead(PIN_ASSI[a]);
+      s += analogRead(AXIS_PINS[a]);
       delay(1);
     }
-    centro[a] = (int)(s / 64);
+    centre[a] = (int)(s / 64);
   }
 }
 
-// grezzo 0..4095 -> -511..511 con zona morta e scala separata sui due lati del centro
-int scala(int grezzo, int c, bool inverti) {
-  int v = grezzo - c;
+// raw 0..4095 -> -511..511 with a dead zone and separate scaling on each side of the centre
+int scaleAxis(int raw, int c, bool invert) {
+  int v = raw - c;
   long r;
-  if (abs(v) <= ZONA_MORTA) {
+  if (abs(v) <= DEAD_ZONE) {
     r = 0;
   } else if (v > 0) {
-    r = (long)(v - ZONA_MORTA) * 511L / max(1, 4095 - c - ZONA_MORTA);
+    r = (long)(v - DEAD_ZONE) * 511L / max(1, 4095 - c - DEAD_ZONE);
   } else {
-    r = (long)(v + ZONA_MORTA) * 511L / max(1, c - ZONA_MORTA);
+    r = (long)(v + DEAD_ZONE) * 511L / max(1, c - DEAD_ZONE);
   }
   r = constrain(r, -511L, 511L);
-  return (int)(inverti ? -r : r);
+  return (int)(invert ? -r : r);
 }
 
-uint8_t leggiTasti() {
+uint8_t readButtons() {
   uint8_t b = 0;
   for (uint8_t i = 0; i < 5; i++)
-    if (digitalRead(PIN_TASTI[i]) == LOW) b |= (1 << i);
+    if (digitalRead(BUTTON_PINS[i]) == LOW) b |= (1 << i);
   return b;
 }
 
-void lampeggia(uint8_t volte) {
-  for (uint8_t i = 0; i < volte; i++) {
-    digitalWrite(PIN_SPIA, HIGH);
+void blink(uint8_t times) {
+  for (uint8_t i = 0; i < times; i++) {
+    digitalWrite(PIN_LED, HIGH);
     delay(80);
-    digitalWrite(PIN_SPIA, LOW);
+    digitalWrite(PIN_LED, LOW);
     delay(80);
   }
 }
 
-// angolo della croce digitale (-1 = ferma), 0 = su, 90 = destra, 180 = giu', 270 = sinistra
-int angoloCroce(int x, int y) {
-  const int s = 511 * SOGLIA_CROCE / 100;
-  bool su = y < -s, giu = y > s, sx = x < -s, dx = x > s;
-  if (su && dx) return 45;
-  if (giu && dx) return 135;
-  if (giu && sx) return 225;
-  if (su && sx) return 315;
-  if (su) return 0;
-  if (dx) return 90;
-  if (giu) return 180;
-  if (sx) return 270;
+// d-pad angle (-1 = centred), 0 = up, 90 = right, 180 = down, 270 = left
+int dpadAngle(int x, int y) {
+  const int s = 511 * DPAD_THRESHOLD / 100;
+  bool up = y < -s, down = y > s, left = x < -s, right = x > s;
+  if (up && right) return 45;
+  if (down && right) return 135;
+  if (down && left) return 225;
+  if (up && left) return 315;
+  if (up) return 0;
+  if (right) return 90;
+  if (down) return 180;
+  if (left) return 270;
   return -1;
 }
 
 void setup() {
-  for (uint8_t i = 0; i < 5; i++) pinMode(PIN_TASTI[i], INPUT_PULLUP);
-  pinMode(PIN_SPIA, OUTPUT);
-  digitalWrite(PIN_SPIA, LOW);
+  for (uint8_t i = 0; i < 5; i++) pinMode(BUTTON_PINS[i], INPUT_PULLUP);
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_LED, LOW);
   analogReadResolution(12);
   Serial.begin(115200);
 
   Joystick.begin();
   Joystick.useManualSend(true);
 
-  delay(300);          // lascia assestare il potenziometro
-  calibra();           // non toccare il joystick mentre colleghi il cavo
-  lampeggia(2);
+  delay(300);          // let the potentiometer settle
+  calibrate();         // do not touch the joystick while plugging in the cable
+  blink(2);
 }
 
 void loop() {
-  unsigned long ora = millis();
+  unsigned long now = millis();
 
-  // ---- antirimbalzo pulsanti
-  uint8_t l = leggiTasti();
-  if (l != letturaPrec) {
-    letturaPrec = l;
-    tCambio = ora;
+  // ---- button debounce
+  uint8_t r = readButtons();
+  if (r != prevReading) {
+    prevReading = r;
+    tChange = now;
   }
-  if (ora - tCambio >= ANTIRIMBALZO_MS) statoTasti = l;
+  if (now - tChange >= DEBOUNCE_MS) buttonState = r;
 
-  bool a  = statoTasti & (1 << T_A);
-  bool b  = statoTasti & (1 << T_B);
-  bool x  = statoTasti & (1 << T_X);
-  bool y  = statoTasti & (1 << T_Y);
-  bool l3 = statoTasti & (1 << T_L3);
+  bool a  = buttonState & (1 << B_A);
+  bool b  = buttonState & (1 << B_B);
+  bool x  = buttonState & (1 << B_X);
+  bool y  = buttonState & (1 << B_Y);
+  bool l3 = buttonState & (1 << B_L3);
 
-  // ---- tasto funzione L3
+  // ---- L3 function key
   if (l3) {
-    if (!l3Giu) {
-      l3Giu = true;
-      comboUsata = false;
-      ricalibrato = false;
-      tL3 = ora;
+    if (!l3Down) {
+      l3Down = true;
+      comboUsed = false;
+      recalibrated = false;
+      tL3 = now;
     }
-    if (a || b || x || y) comboUsata = true;
-    // ricalibrazione: L3 tenuto da solo per 5 secondi
-    if (!comboUsata && !ricalibrato && ora - tL3 >= RICALIBRA_MS) {
-      lampeggia(4);
+    if (a || b || x || y) comboUsed = true;
+    // recalibration: L3 held on its own for 5 seconds
+    if (!comboUsed && !recalibrated && now - tL3 >= RECALIBRATE_MS) {
+      blink(4);
       delay(400);
-      calibra();
-      lampeggia(4);
-      ricalibrato = true;
-      comboUsata = true;   // niente clic L3 al rilascio
+      calibrate();
+      blink(4);
+      recalibrated = true;
+      comboUsed = true;   // no L3 click on release
     }
-  } else if (l3Giu) {
-    l3Giu = false;
-    if (!comboUsata && ora - tL3 <= TAP_L3_MAX_MS) fineTapL3 = ora + TAP_L3_MS;
+  } else if (l3Down) {
+    l3Down = false;
+    if (!comboUsed && now - tL3 <= L3_TAP_MAX_MS) l3TapEnd = now + L3_TAP_MS;
   }
 
-  if (ora - tInvio < PERIODO_MS) return;
-  tInvio = ora;
+  if (now - tSend < PERIOD_MS) return;
+  tSend = now;
 
-  // ---- pulsanti (numerati da 1)
+  // ---- buttons (numbered from 1)
   bool hid[10] = {false};
   if (l3) {
     hid[5] = a;      // L1
@@ -200,41 +200,41 @@ void loop() {
     hid[3] = x;
     hid[4] = y;
   }
-  hid[9] = (long)(fineTapL3 - ora) > 0;   // L3
+  hid[9] = (long)(l3TapEnd - now) > 0;   // L3
   for (uint8_t i = 1; i <= 9; i++) Joystick.button(i, hid[i]);
 
-  // ---- assi
+  // ---- axes
   int g[2];
-  for (uint8_t i = 0; i < 2; i++) g[i] = leggiAsse(PIN_ASSI[i]);
-#if SCAMBIA_XY
-  int sx = scala(g[1], centro[1], INVERTI_X), sy = scala(g[0], centro[0], INVERTI_Y);
+  for (uint8_t i = 0; i < 2; i++) g[i] = readAxis(AXIS_PINS[i]);
+#if SWAP_XY
+  int sx = scaleAxis(g[1], centre[1], INVERT_X), sy = scaleAxis(g[0], centre[0], INVERT_Y);
 #else
-  int sx = scala(g[0], centro[0], INVERTI_X), sy = scala(g[1], centro[1], INVERTI_Y);
+  int sx = scaleAxis(g[0], centre[0], INVERT_X), sy = scaleAxis(g[1], centre[1], INVERT_Y);
 #endif
-  Joystick.X(sx + 512);          // 0..1023, centro 512
+  Joystick.X(sx + 512);          // 0..1023, centre 512
   Joystick.Y(sy + 512);
   Joystick.Z(512);
   Joystick.Zrotate(512);
   Joystick.sliderLeft(0);
   Joystick.sliderRight(0);
-#if CROCE_DA_STICK
-  Joystick.hat(angoloCroce(sx, sy));
+#if DPAD_FROM_STICK
+  Joystick.hat(dpadAngle(sx, sy));
 #else
   Joystick.hat(-1);
 #endif
   Joystick.send_now();
 
-  // ---- LED: acceso mentre un pulsante e' premuto
-  digitalWrite(PIN_SPIA, statoTasti ? HIGH : LOW);
+  // ---- LED: on while a button is pressed
+  digitalWrite(PIN_LED, buttonState ? HIGH : LOW);
 
-  // ---- debug sul monitor seriale
+  // ---- debug on the Serial Monitor
   while (Serial.available()) {
     char c = Serial.read();
     if (c == 'd' || c == 'D') debug = !debug;
   }
-  if (debug && ora - tDebug >= 100) {
-    tDebug = ora;
-    Serial.printf("grezzi X %4d Y %4d | centro %4d %4d | X %4d Y %4d | tasti ", g[0], g[1], centro[0], centro[1], sx, sy);
-    Serial.println(statoTasti, BIN);
+  if (debug && now - tDebug >= 100) {
+    tDebug = now;
+    Serial.printf("raw X %4d Y %4d | centre %4d %4d | X %4d Y %4d | buttons ", g[0], g[1], centre[0], centre[1], sx, sy);
+    Serial.println(buttonState, BIN);
   }
 }
